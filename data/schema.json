@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/klakix-ai/ai-video-pricing/data/schema.json",
+  "title": "AI video generation price rows",
+  "description": "One row per model x provider x resolution x audio. Prices are public list prices in USD, normalized to USD per second of output video.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "model_family", "model", "version", "vendor", "provider", "provider_url", "mode", "resolution", "audio", "billing_unit", "list_price", "usd_per_second", "usd_per_5s", "usd_per_10s", "assumptions", "source_url", "checked_at", "confidence", "status", "promotion"],
+    "properties": {
+      "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$", "description": "Unique, stable row id."},
+      "model_family": {"type": "string", "minLength": 1},
+      "model": {"type": "string", "minLength": 1},
+      "version": {"type": "string", "minLength": 1},
+      "vendor": {"type": "string", "minLength": 1, "description": "Company that built the model."},
+      "provider": {"type": "string", "minLength": 1, "description": "Company or API that sells access and sets this price."},
+      "provider_url": {"type": "string", "pattern": "^https://"},
+      "mode": {
+        "type": "array", "minItems": 1, "uniqueItems": true,
+        "items": {"enum": ["text-to-video", "image-to-video", "reference-to-video", "video-to-video"]}
+      },
+      "resolution": {"type": "string", "minLength": 1, "description": "Output resolution label, e.g. 720p, 1080p, 4k, or 'unspecified' when the price page does not say."},
+      "audio": {"enum": [true, false, "n/a"], "description": "true = price is for output with generated audio, false = silent video price, n/a = not stated or not separately priced."},
+      "billing_unit": {"enum": ["per_second", "per_count", "per_million_tokens", "credits_per_second", "credits_per_clip_5s", "credits_per_clip_10s", "per_clip_5s", "per_clip_6s", "per_clip_10s"]},
+      "list_price": {"type": "string", "minLength": 1, "description": "Price text as published, in the provider's own unit."},
+      "usd_per_second": {"type": "number", "exclusiveMinimum": 0},
+      "usd_per_5s": {"type": "number", "exclusiveMinimum": 0},
+      "usd_per_10s": {"type": "number", "exclusiveMinimum": 0},
+      "assumptions": {"type": "string", "description": "Conversion formula, credit value, token formula, interpretation notes."},
+      "source_url": {"type": "string", "pattern": "^https://"},
+      "checked_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+      "confidence": {"enum": ["high", "medium", "low"]},
+      "status": {"enum": ["available", "discontinued"]},
+      "promotion": {"type": "boolean", "description": "true when a time-limited discount applies or is mentioned in list_price or assumptions."}
+    }
+  }
+}
